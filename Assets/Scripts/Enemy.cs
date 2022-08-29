@@ -27,7 +27,7 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    //! Update to the next waypoint
+    //! Update to the next waypoint.
     void GetNextWaypoint()
     {
         if( wavepointIndex >= Waypoints.points.Length - 1)
