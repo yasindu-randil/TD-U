@@ -16,9 +16,9 @@ public class Enemy : MonoBehaviour
 
     void Update()
     {
-        // Get the distance difference with Enemy object and the waypoint
+        //! Get the distance difference with Enemy object and the waypoint
         Vector3 dir = target.position - transform.position;
-        // Add the speed and normalize it 
+        //! Add the speed and normalize it 
         transform.Translate(dir.normalized * speed * Time.deltaTime, Space.World);
 
         if(Vector3.Distance(transform.position, target.position) <= 0.2f)
@@ -27,7 +27,7 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    //Update to the next waypoint
+    //! Update to the next waypoint
     void GetNextWaypoint()
     {
         if( wavepointIndex >= Waypoints.points.Length - 1)

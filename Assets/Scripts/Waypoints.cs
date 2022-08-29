@@ -8,10 +8,10 @@ public class Waypoints : MonoBehaviour
 
     void Awake()
     {
-        // Get the number of Way points
+        //! Get the number of Way points
         points = new Transform[transform.childCount];
 
-        // Populate the transform array with the waypoints
+        //! Populate the transform array with the waypoints
         for(int i=0; i< points.Length; i++)
         {
             points[i] = transform.GetChild(i);
