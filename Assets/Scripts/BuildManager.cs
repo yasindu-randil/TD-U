@@ -20,6 +20,7 @@ public class BuildManager : MonoBehaviour
     }
 
     public GameObject standardTurretPrefab;
+    public GameObject secondTurretPrefab;
 
     void Start()
     {
@@ -30,7 +31,11 @@ public class BuildManager : MonoBehaviour
 
     public GameObject GetTurretToBuild()
     {
-        UnityEngine.Debug.Log("Inside Turret To Build ***************************");
         return turretToBuild;
+    }
+
+    public void SetTurretToBuild(GameObject turret)
+    {
+        turretToBuild = turret;
     }
 }

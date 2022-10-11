@@ -1,7 +1,7 @@
 
-using System.Security.Cryptography;
 using System.Threading;
 using UnityEngine;
+
 
 public class CameraController : MonoBehaviour
 {

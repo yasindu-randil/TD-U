@@ -20,6 +20,7 @@ public class Node : MonoBehaviour, IPointerDownHandler
 
     public Vector3 turretOffset;
 
+    BuildManager buildManager;
     void onMouseDown()
     {
         UnityEngine.Debug.Log("Inside onMouseDown &&&&&&&&&&&&&&&&&&&&&&&&&");
@@ -37,13 +38,21 @@ public class Node : MonoBehaviour, IPointerDownHandler
 
     void Start ()
     {
+
+
         addPhysicsRaycaster();
         rend = GetComponent<Renderer>();
         startColor = rend.material.color;
+        buildManager = BuildManager.instance;
     }
 
     void OnMouseEnter ()
     {
+
+        if (buildManager.GetTurretToBuild() == null)
+        {
+            return;
+        }
         rend.material.color = hoverColor;
     }
 
@@ -63,6 +72,13 @@ public class Node : MonoBehaviour, IPointerDownHandler
 
     public void OnPointerDown(PointerEventData eventData)
     {
+
+
+        if (buildManager.GetTurretToBuild() == null)
+        {
+            return;
+        }
+
         if(turret != null)
         {
             UnityEngine.Debug.Log("Turret cannot be build here");
