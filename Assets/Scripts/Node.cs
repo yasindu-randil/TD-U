@@ -40,6 +40,9 @@ public class Node : MonoBehaviour, IPointerDownHandler
     {
 
 
+
+
+
         addPhysicsRaycaster();
         rend = GetComponent<Renderer>();
         startColor = rend.material.color;
