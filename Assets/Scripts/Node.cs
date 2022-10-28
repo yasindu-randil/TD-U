@@ -16,9 +16,10 @@ public class Node : MonoBehaviour, IPointerDownHandler
     private Renderer rend;
     private Color startColor;
 
-    private GameObject turret;
+    [Header("Optional")]
+    public GameObject turret;
 
-    public Vector3 turretOffset;
+    public Vector3 positionOffset;
 
     BuildManager buildManager;
     void onMouseDown()
@@ -30,18 +31,11 @@ public class Node : MonoBehaviour, IPointerDownHandler
             return;
         }
 
-        //Building a turrent on an empty node
-        GameObject turretToBuild = BuildManager.instance.GetTurretToBuild();
-        turret = (GameObject)Instantiate(turretToBuild, transform.position, transform.rotation);
 
     }
 
     void Start ()
     {
-
-
-
-
 
         addPhysicsRaycaster();
         rend = GetComponent<Renderer>();
@@ -49,10 +43,15 @@ public class Node : MonoBehaviour, IPointerDownHandler
         buildManager = BuildManager.instance;
     }
 
+    public Vector3 GetBuildPosition()
+    {
+        return transform.position + positionOffset;
+    }
+
     void OnMouseEnter ()
     {
 
-        if (buildManager.GetTurretToBuild() == null)
+        if (!buildManager.CanBuild)
         {
             return;
         }
@@ -77,7 +76,7 @@ public class Node : MonoBehaviour, IPointerDownHandler
     {
 
 
-        if (buildManager.GetTurretToBuild() == null)
+        if (!buildManager.CanBuild)
         {
             return;
         }
@@ -88,7 +87,6 @@ public class Node : MonoBehaviour, IPointerDownHandler
             return;
         }
 
-        GameObject turretToBuild = BuildManager.instance.GetTurretToBuild(); 
-        turret = (GameObject)Instantiate(turretToBuild, transform.position + turretOffset, transform.rotation);
+        buildManager.BuildTurretOn(this);
     }
 }
