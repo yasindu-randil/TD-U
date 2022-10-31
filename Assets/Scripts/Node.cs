@@ -12,6 +12,7 @@ public class Node : MonoBehaviour, IPointerDownHandler
 {
     [Header("Color Info")]
     public Color hoverColor;
+    public Color notEnoughMoneyColor;
 
     private Renderer rend;
     private Color startColor;
@@ -55,7 +56,16 @@ public class Node : MonoBehaviour, IPointerDownHandler
         {
             return;
         }
-        rend.material.color = hoverColor;
+
+        if(buildManager.HasMoney)
+        {
+            rend.material.color = hoverColor;
+        }
+        else
+        {
+            rend.material.color = notEnoughMoneyColor;
+        }
+
     }
 
     void OnMouseExit()
