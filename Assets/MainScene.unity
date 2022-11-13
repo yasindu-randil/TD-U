@@ -282,7 +282,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2336893556034666593, guid: ff4f9f4805c92ef4c8ef2644c624fed0, type: 3}
       propertyPath: m_Name
-      value: MissileLauncherItem (1)
+      value: MissileLauncherItem
       objectReference: {fileID: 0}
     - target: {fileID: 2336893556034666597, guid: ff4f9f4805c92ef4c8ef2644c624fed0, type: 3}
       propertyPath: m_Sprite
