@@ -1,5 +1,14 @@
-
+using UnityEngine;
 using UnityEditor;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.IO;
+//using System.IO.Compression;
+//using Ionic.Zip;
+
 
 
 // place in an "Editor" folder in your Assets folder
@@ -26,7 +35,7 @@ public class BuildRadiator
                                                     GetProjectFolderPath() + "/Builds/",
                                                     "");
         var filename = path.Split('/'); // do this so I can grab the project folder name
-        BuildPlayer(BuildTarget.StandaloneOSXUniversal, filename[filename.Length - 1], path + "/");
+        BuildPlayer(BuildTarget.StandaloneOSX, filename[filename.Length - 1], path + "/");
         BuildPlayer(BuildTarget.StandaloneLinuxUniversal, filename[filename.Length - 1], path + "/");
         BuildPlayer(BuildTarget.StandaloneWindows, filename[filename.Length - 1], path + "/");
 
@@ -50,7 +59,7 @@ public class BuildRadiator
                 break;
             case BuildTarget.StandaloneOSXIntel:
             case BuildTarget.StandaloneOSXIntel64:
-            case BuildTarget.StandaloneOSXUniversal:
+            case BuildTarget.StandaloneOSX:
                 modifier = "_mac-osx";
                 fileExtension = ".app";
                 dataPath = fileExtension + "/Contents/";
@@ -86,7 +95,7 @@ public class BuildRadiator
                                                           // TODO: copy over readme
 
         // ZIP everything
-        CompressDirectory(buildPath, path + "/" + filename + modifier + ".zip");
+        //CompressDirectory(buildPath, path + "/" + filename + modifier + ".zip");
     }
 
     // from http://wiki.unity3d.com/index.php?title=AutoBuilder
@@ -132,7 +141,7 @@ public class BuildRadiator
     }
 
     // compress the folder into a ZIP file, uses https://github.com/r2d2rigo/dotnetzip-for-unity
-    static void CompressDirectory(string directory, string zipFileOutputPath)
+    /*static void CompressDirectory(string directory, string zipFileOutputPath)
     {
         Debug.Log("attempting to compress " + directory + " into " + zipFileOutputPath);
         // display fake percentage, I can't get zip.SaveProgress event handler to work for some reason, whatever
@@ -144,6 +153,6 @@ public class BuildRadiator
             zip.Save(zipFileOutputPath);
         }
         EditorUtility.ClearProgressBar();
-    }
+    }*/
 
 }
