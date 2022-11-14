@@ -1,140 +1,149 @@
-// -------------------------------------------------------------------------------------------------
-// Assets/Editor/JenkinsBuild.cs
-// -------------------------------------------------------------------------------------------------
-using UnityEngine;
+
 using UnityEditor;
-using System.Collections.Generic;
-using UnityEditor.Build.Reporting;
 
-// ------------------------------------------------------------------------
-// https://docs.unity3d.com/Manual/CommandLineArguments.html
-// ------------------------------------------------------------------------
-public class JenkinsBuild
+
+// place in an "Editor" folder in your Assets folder
+public class BuildRadiator
 {
+    // TODO: turn this into a wizard or something??? whatever
 
-    static string[] EnabledScenes = FindEnabledEditorScenes();
-
-    // ------------------------------------------------------------------------
-    // called from Jenkins
-    // ------------------------------------------------------------------------
-    public static void BuildMacOS()
+    [MenuItem("BuildRadiator/Build Windows")]
+    public static void StartWindows()
     {
-        var args = FindArgs();
-
-        string fullPathAndName = args.targetDir + args.appName + ".app";
-        BuildProject(EnabledScenes, fullPathAndName, BuildTargetGroup.Standalone, BuildTarget.StandaloneOSX, BuildOptions.None);
+        // Get filename.
+        string path = EditorUtility.SaveFolderPanel("Build out WINDOWS to...",
+                                                    GetProjectFolderPath() + "/Builds/",
+                                                    "");
+        var filename = path.Split('/'); // do this so I can grab the project folder name
+        BuildPlayer(BuildTarget.StandaloneWindows, filename[filename.Length - 1], path + "/");
     }
 
-    // ------------------------------------------------------------------------
-    // called from Jenkins
-    // ------------------------------------------------------------------------
-    public static void BuildWindows64()
+    [MenuItem("BuildRadiator/Build Windows + Mac OSX + Linux")]
+    public static void StartAll()
     {
-        var args = FindArgs();
+        // Get filename.
+        string path = EditorUtility.SaveFolderPanel("Build out ALL STANDALONES to...",
+                                                    GetProjectFolderPath() + "/Builds/",
+                                                    "");
+        var filename = path.Split('/'); // do this so I can grab the project folder name
+        BuildPlayer(BuildTarget.StandaloneOSXUniversal, filename[filename.Length - 1], path + "/");
+        BuildPlayer(BuildTarget.StandaloneLinuxUniversal, filename[filename.Length - 1], path + "/");
+        BuildPlayer(BuildTarget.StandaloneWindows, filename[filename.Length - 1], path + "/");
 
-        string fullPathAndName = args.targetDir + args.appName;
-        BuildProject(EnabledScenes, fullPathAndName, BuildTargetGroup.Standalone, BuildTarget.StandaloneWindows64, BuildOptions.None);
     }
 
-    // ------------------------------------------------------------------------
-    // called from Jenkins
-    // ------------------------------------------------------------------------
-    public static void BuildLinux()
+    // this is the main player builder function
+    static void BuildPlayer(BuildTarget buildTarget, string filename, string path)
     {
-        var args = FindArgs();
+        string fileExtension = "";
+        string dataPath = "";
+        string modifier = "";
 
-        string fullPathAndName = args.targetDir + args.appName;
-        BuildProject(EnabledScenes, fullPathAndName, BuildTargetGroup.Standalone, BuildTarget.StandaloneLinux64, BuildOptions.None);
-    }
-
-    private static Args FindArgs()
-    {
-        var returnValue = new Args();
-
-        // find: -executeMethod
-        //   +1: JenkinsBuild.BuildMacOS
-        //   +2: FindTheGnome
-        //   +3: D:\Jenkins\Builds\Find the Gnome\47\output
-        string[] args = System.Environment.GetCommandLineArgs();
-        var execMethodArgPos = -1;
-        bool allArgsFound = false;
-        for (int i = 0; i < args.Length; i++)
+        // configure path variables based on the platform we're targeting
+        switch (buildTarget)
         {
-            if (args[i] == "-executeMethod")
+            case BuildTarget.StandaloneWindows:
+            case BuildTarget.StandaloneWindows64:
+                modifier = "_windows";
+                fileExtension = ".exe";
+                dataPath = "_Data/";
+                break;
+            case BuildTarget.StandaloneOSXIntel:
+            case BuildTarget.StandaloneOSXIntel64:
+            case BuildTarget.StandaloneOSXUniversal:
+                modifier = "_mac-osx";
+                fileExtension = ".app";
+                dataPath = fileExtension + "/Contents/";
+                break;
+            case BuildTarget.StandaloneLinux:
+            case BuildTarget.StandaloneLinux64:
+            case BuildTarget.StandaloneLinuxUniversal:
+                modifier = "_linux";
+                dataPath = "_Data/";
+                switch (buildTarget)
+                {
+                    case BuildTarget.StandaloneLinux: fileExtension = ".x86"; break;
+                    case BuildTarget.StandaloneLinux64: fileExtension = ".x64"; break;
+                    case BuildTarget.StandaloneLinuxUniversal: fileExtension = ".x86_64"; break;
+                }
+                break;
+        }
+
+        Debug.Log("====== BuildPlayer: " + buildTarget.ToString() + " at " + path + filename);
+        EditorUserBuildSettings.SwitchActiveBuildTarget(buildTarget);
+
+        // build out the player
+        string buildPath = path + filename + modifier + "/";
+        Debug.Log("buildpath: " + buildPath);
+        string playerPath = buildPath + filename + modifier + fileExtension;
+        Debug.Log("playerpath: " + playerPath);
+        BuildPipeline.BuildPlayer(GetScenePaths(), playerPath, buildTarget, buildTarget == BuildTarget.StandaloneWindows ? BuildOptions.ShowBuiltPlayer : BuildOptions.None);
+
+        // Copy files over into builds
+        string fullDataPath = buildPath + filename + modifier + dataPath;
+        Debug.Log("fullDataPath: " + fullDataPath);
+        CopyFromProjectAssets(fullDataPath, "languages"); // language text files that Radiator uses
+                                                          // TODO: copy over readme
+
+        // ZIP everything
+        CompressDirectory(buildPath, path + "/" + filename + modifier + ".zip");
+    }
+
+    // from http://wiki.unity3d.com/index.php?title=AutoBuilder
+    static string[] GetScenePaths()
+    {
+        string[] scenes = new string[EditorBuildSettings.scenes.Length];
+        for (int i = 0; i < scenes.Length; i++)
+        {
+            scenes[i] = EditorBuildSettings.scenes[i].path;
+        }
+        return scenes;
+    }
+
+    static string GetProjectName()
+    {
+        string[] s = Application.dataPath.Split('/');
+        return s[s.Length - 2];
+    }
+
+    static string GetProjectFolderPath()
+    {
+        var s = Application.dataPath;
+        s = s.Substring(s.Length - 7, 7); // remove "Assets/"
+        return s;
+    }
+
+    // copies over files from somewhere in my project folder to my standalone build's path
+    // do not put a "/" at beginning of assetsFolderName
+    static void CopyFromProjectAssets(string fullDataPath, string assetsFolderPath, bool deleteMetaFiles = true)
+    {
+        Debug.Log("CopyFromProjectAssets: copying over " + assetsFolderPath);
+        FileUtil.ReplaceDirectory(Application.dataPath + "/" + assetsFolderPath, fullDataPath + assetsFolderPath); // copy over languages
+
+        // delete all meta files
+        if (deleteMetaFiles)
+        {
+            var metaFiles = Directory.GetFiles(fullDataPath + assetsFolderPath, "*.meta", SearchOption.AllDirectories);
+            foreach (var meta in metaFiles)
             {
-                execMethodArgPos = i;
-            }
-            var realPos = execMethodArgPos == -1 ? -1 : i - execMethodArgPos - 2;
-            if (realPos < 0)
-                continue;
-
-            if (realPos == 0)
-                returnValue.appName = args[i];
-            if (realPos == 1)
-            {
-                returnValue.targetDir = args[i];
-                if (!returnValue.targetDir.EndsWith(System.IO.Path.DirectorySeparatorChar + ""))
-                    returnValue.targetDir += System.IO.Path.DirectorySeparatorChar;
-
-                allArgsFound = true;
+                FileUtil.DeleteFileOrDirectory(meta);
             }
         }
-
-        if (!allArgsFound)
-            System.Console.WriteLine("[JenkinsBuild] Incorrect Parameters for -executeMethod Format: -executeMethod JenkinsBuild.BuildWindows64 <app name> <output dir>");
-
-        return returnValue;
     }
 
-
-    // ------------------------------------------------------------------------
-    // ------------------------------------------------------------------------
-    private static string[] FindEnabledEditorScenes()
+    // compress the folder into a ZIP file, uses https://github.com/r2d2rigo/dotnetzip-for-unity
+    static void CompressDirectory(string directory, string zipFileOutputPath)
     {
-
-        List<string> EditorScenes = new List<string>();
-        foreach (EditorBuildSettingsScene scene in EditorBuildSettings.scenes)
-            if (scene.enabled)
-                EditorScenes.Add(scene.path);
-
-        return EditorScenes.ToArray();
+        Debug.Log("attempting to compress " + directory + " into " + zipFileOutputPath);
+        // display fake percentage, I can't get zip.SaveProgress event handler to work for some reason, whatever
+        EditorUtility.DisplayProgressBar("COMPRESSING... please wait", zipFileOutputPath, 0.38f);
+        using (ZipFile zip = new ZipFile())
+        {
+            zip.ParallelDeflateThreshold = -1; // DotNetZip bugfix that corrupts DLLs / binaries http://stackoverflow.com/questions/15337186/dotnetzip-badreadexception-on-extract
+            zip.AddDirectory(directory);
+            zip.Save(zipFileOutputPath);
+        }
+        EditorUtility.ClearProgressBar();
     }
 
-    // ------------------------------------------------------------------------
-    // e.g. BuildTargetGroup.Standalone, BuildTarget.StandaloneOSX
-    // ------------------------------------------------------------------------
-    private static void BuildProject(string[] scenes, string targetDir, BuildTargetGroup buildTargetGroup, BuildTarget buildTarget, BuildOptions buildOptions)
-    {
-        System.Console.WriteLine("[JenkinsBuild] Building:" + targetDir + " buildTargetGroup:" + buildTargetGroup.ToString() + " buildTarget:" + buildTarget.ToString());
-
-        // https://docs.unity3d.com/ScriptReference/EditorUserBuildSettings.SwitchActiveBuildTarget.html
-        bool switchResult = EditorUserBuildSettings.SwitchActiveBuildTarget(buildTargetGroup, buildTarget);
-        if (switchResult)
-        {
-            System.Console.WriteLine("[JenkinsBuild] Successfully changed Build Target to: " + buildTarget.ToString());
-        }
-        else
-        {
-            System.Console.WriteLine("[JenkinsBuild] Unable to change Build Target to: " + buildTarget.ToString() + " Exiting...");
-            return;
-        }
-
-        // https://docs.unity3d.com/ScriptReference/BuildPipeline.BuildPlayer.html
-        BuildReport buildReport = BuildPipeline.BuildPlayer(scenes, targetDir, buildTarget, buildOptions);
-        BuildSummary buildSummary = buildReport.summary;
-        if (buildSummary.result == BuildResult.Succeeded)
-        {
-            System.Console.WriteLine("[JenkinsBuild] Build Success: Time:" + buildSummary.totalTime + " Size:" + buildSummary.totalSize + " bytes");
-        }
-        else
-        {
-            System.Console.WriteLine("[JenkinsBuild] Build Failed: Time:" + buildSummary.totalTime + " Total Errors:" + buildSummary.totalErrors);
-        }
-    }
-
-    private class Args
-    {
-        public string appName = "AppName";
-        public string targetDir = "~/Desktop";
-    }
 }
