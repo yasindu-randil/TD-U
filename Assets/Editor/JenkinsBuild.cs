@@ -24,7 +24,7 @@ public class BuildRadiator
                                                     GetProjectFolderPath() + "/Builds/",
                                                     "");
         var filename = path.Split('/'); // do this so I can grab the project folder name
-        BuildPlayer(BuildTarget.StandaloneWindows, filename[filename.Length - 1], path + "/");
+        BuildPlayer(BuildTarget.StandaloneWindows64, filename[filename.Length - 1], path + "/");
     }
 
     [MenuItem("BuildRadiator/Build Windows + Mac OSX + Linux")]
@@ -35,8 +35,8 @@ public class BuildRadiator
                                                     GetProjectFolderPath() + "/Builds/",
                                                     "");
         var filename = path.Split('/'); // do this so I can grab the project folder name
-        BuildPlayer(BuildTarget.StandaloneOSX, filename[filename.Length - 1], path + "/");
-        BuildPlayer(BuildTarget.StandaloneLinuxUniversal, filename[filename.Length - 1], path + "/");
+        //BuildPlayer(BuildTarget.StandaloneOSX, filename[filename.Length - 1], path + "/");
+        //BuildPlayer(BuildTarget.StandaloneLinuxUniversal, filename[filename.Length - 1], path + "/");
         BuildPlayer(BuildTarget.StandaloneWindows, filename[filename.Length - 1], path + "/");
 
     }
@@ -86,7 +86,7 @@ public class BuildRadiator
         Debug.Log("buildpath: " + buildPath);
         string playerPath = buildPath + filename + modifier + fileExtension;
         Debug.Log("playerpath: " + playerPath);
-        BuildPipeline.BuildPlayer(GetScenePaths(), playerPath, buildTarget, buildTarget == BuildTarget.StandaloneWindows ? BuildOptions.ShowBuiltPlayer : BuildOptions.None);
+        BuildPipeline.BuildPlayer(GetScenePaths(), playerPath, buildTarget, buildTarget == BuildTarget.StandaloneWindows64 ? BuildOptions.ShowBuiltPlayer : BuildOptions.None);
 
         // Copy files over into builds
         string fullDataPath = buildPath + filename + modifier + dataPath;
