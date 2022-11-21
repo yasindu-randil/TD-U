@@ -1,0 +1,4 @@
+<map id="Turret.Shoot" name="Turret.Shoot">
+<area shape="rect" id="node1" title=" " alt="" coords="5,5,99,32"/>
+<area shape="rect" id="node2" href="$classBullet.html#aca8560b00b4fdcd8308c02ca34c9c2a1" title=" " alt="" coords="147,5,269,32"/>
+</map>

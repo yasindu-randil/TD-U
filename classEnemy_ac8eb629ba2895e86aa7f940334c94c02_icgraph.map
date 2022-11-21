@@ -1,0 +1,8 @@
+<map id="Enemy.Die" name="Enemy.Die">
+<area shape="rect" id="node1" title=" " alt="" coords="808,31,891,57"/>
+<area shape="rect" id="node2" href="$classEnemy.html#a7650e659b693a3fa9aa4bbdcfc858d10" title=" " alt="" coords="619,31,760,57"/>
+<area shape="rect" id="node3" href="$classBullet.html#ae96a53f82b15b06ec472fb29462926a7" title=" " alt="" coords="464,31,571,57"/>
+<area shape="rect" id="node4" href="$classBullet.html#afa24929dacc6df306fe22d4131862f3e" title=" " alt="" coords="313,5,416,32"/>
+<area shape="rect" id="node5" href="$classBullet.html#a9aa86a731424de60874c2668950aee57" title=" " alt="" coords="153,31,265,57"/>
+<area shape="rect" id="node6" href="$classBullet.html#ac6941e4e535a484e4b3a86b993633572" title=" " alt="" coords="5,31,105,57"/>
+</map>

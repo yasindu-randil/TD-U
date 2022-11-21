@@ -1,0 +1,4 @@
+<map id="WaveSpawner.SpawnWave" name="WaveSpawner.SpawnWave">
+<area shape="rect" id="node1" title="Spawn enemies according to the wave count." alt="" coords="5,5,188,32"/>
+<area shape="rect" id="node2" href="$classWaveSpawner.html#a6e5387295f77eda40612fce61ab436b3" title="Enemy object Instantiation." alt="" coords="236,5,424,32"/>
+</map>

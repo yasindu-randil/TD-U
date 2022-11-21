@@ -1,0 +1,7 @@
+<map id="Bullet.HitTarget" name="Bullet.HitTarget">
+<area shape="rect" id="node1" title=" " alt="" coords="5,5,117,32"/>
+<area shape="rect" id="node2" href="$classBullet.html#ae96a53f82b15b06ec472fb29462926a7" title=" " alt="" coords="316,5,423,32"/>
+<area shape="rect" id="node5" href="$classBullet.html#afa24929dacc6df306fe22d4131862f3e" title=" " alt="" coords="165,31,268,57"/>
+<area shape="rect" id="node3" href="$classEnemy.html#a7650e659b693a3fa9aa4bbdcfc858d10" title=" " alt="" coords="471,5,612,32"/>
+<area shape="rect" id="node4" href="$classEnemy.html#ac8eb629ba2895e86aa7f940334c94c02" title=" " alt="" coords="660,5,743,32"/>
+</map>

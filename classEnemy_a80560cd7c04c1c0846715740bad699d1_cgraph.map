@@ -1,0 +1,5 @@
+<map id="Enemy.Update" name="Enemy.Update">
+<area shape="rect" id="node1" title=" " alt="" coords="5,5,112,32"/>
+<area shape="rect" id="node2" href="$classEnemy.html#a5d6489f72b20ed5b03ab737638a6ef07" title="Update to the next waypoint." alt="" coords="160,5,325,32"/>
+<area shape="rect" id="node3" href="$classEnemy.html#ac47b14d542688ecc8796825f0193bee8" title=" " alt="" coords="373,5,487,32"/>
+</map>
